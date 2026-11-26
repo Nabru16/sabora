@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta de Presentación Digital - Sabora</title>
+    <!-- Tailwind CSS para estilos rápidos y modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts para una tipografía elegante -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para íconos realistas -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Alpine.js para interactividad ligera (modales y calendario) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Sombra base para los botones circulares */
+        .icon-shadow {
+            box-shadow: 0 4px 14px 0 rgba(0, 106, 78, 0.22);
+        }
+        /* Resalte exclusivo en el círculo del botón sin recuadro exterior */
+        .circle-btn {
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.22s ease,
+                        filter 0.22s ease;
+        }
+        .group:hover .circle-btn,
+        .group:focus-visible .circle-btn {
+            transform: translateY(-4px) scale(1.1);
+            box-shadow: 0 10px 22px 0 rgba(0, 106, 78, 0.38), 0 0 0 4px rgba(0, 106, 78, 0.4);
+            filter: brightness(1.1);
+        }
+        .group:active .circle-btn {
+            transform: translateY(-1px) scale(1.03);
+        }
+        .circle-label {
+            transition: color 0.2s ease;
+        }
+        .group:hover .circle-label {
+            color: #006A4E;
+            font-weight: 600;
+        }
+        /* Animaciones de entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        /* Animación escalonada para cada ícono */
+        .icon-animate {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        /* Evita el scroll del body cuando un modal está abierto */
+        body.modal-open {
+            overflow: hidden;
+        }
+        /* Fondo exterior difuminado suave con tonos marfil y destellos esmeralda */
+        .bg-sabora-page {
+            background-color: #FFFFF0;
+            background-image:
+                radial-gradient(circle at 12% 15%, rgba(0, 106, 78, 0.13) 0%, transparent 45%),
+                radial-gradient(circle at 88% 85%, rgba(0, 106, 78, 0.11) 0%, transparent 48%),
+                linear-gradient(145deg, #FFFFFF 0%, #FFFFF0 52%, #edf5f0 100%);
+        }
+        /* Fondo interior de la tarjeta con degradado difuminado elegante */
+        .bg-sabora-card {
+            background-color: #FFFFF0;
+            background-image:
+                radial-gradient(circle at 50% 24%, rgba(0, 106, 78, 0.08) 0%, transparent 55%),
+                radial-gradient(circle at 10% 92%, rgba(0, 106, 78, 0.07) 0%, transparent 45%),
+                linear-gradient(180deg, #FFFFFF 0%, #FFFFF0 45%, #f4f9f6 100%);
+        }
+    </style>
+</head>
+<body class="bg-sabora-page">
+
+    <div class="w-full min-h-screen flex items-center justify-center md:p-4 bg-sabora-page">
+        <div x-data="appData()" x-init="init()" x-watch="qrModal || servicesModal || scheduleModal || promoModal || installModal || calendarModal || timePickerModal, value => { document.body.classList.toggle('modal-open', value) }" class="w-full h-screen overflow-y-auto md:h-auto md:max-w-sm bg-sabora-card md:shadow-2xl md:rounded-2xl md:border md:border-[#006A4E]/20 md:overflow-hidden fade-in">
+
+            <!-- 1. Banner Superior Verde de Sabora (sin capa oscura superpuesta) -->
+            <div class="relative h-44 bg-cover bg-center" style="background-image: url('https://i.postimg.cc/k5YpBCg4/SABORA-(1).png');"></div>
+
+            <!-- 2. Foto / Logo de Perfil Circular (sin paloma/badge de verificación) -->
+            <div class="flex justify-center -mt-20 z-10 relative">
+                <img class="w-32 h-32 rounded-full border-4 border-white bg-white object-contain p-1 shadow-lg ring-2 ring-[#006A4E]/25" src="https://i.postimg.cc/nchBwxLJ/SABORA.png" alt="Logo de Sabora" onerror="this.onerror=null;this.src='https://placehold.co/128x128/006A4E/FFFFF0?text=SABORA';">
+            </div>
+
+            <!-- 3. Información Principal Centrada -->
+            <div class="text-center px-6 pt-4 pb-2">
+                <h2 class="text-3xl font-bold text-gray-800">Sabora</h2>
+                <p class="text-gray-700 font-semibold text-sm mt-1">Lo rico también puede hacerte bien</p>
+                <p class="text-gray-600 font-medium text-xs mt-1">Overnight · Shots de Sabor · Ensaladas · Chapatas</p>
+                <p class="text-sm text-[#006A4E] font-medium mt-2 italic">Toca los íconos para interactuar</p>
+            </div>
+
+            <!-- 4. Cuadrícula Uniforme 3x4 (12 Botones Circulares en #006A4E con contorno marfil/verde) -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="grid grid-cols-3 gap-y-6 gap-x-5">
+                    <!-- 1. Llamar -->
+                    <a href="tel:+525666632409" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.05s;" title="Llámanos">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-phone fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Llamar</p>
+                    </a>
+                    <!-- 2. Horario -->
+                    <button type="button" @click="scheduleModal = true" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.1s;" title="Ver Horario de Atención">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-clock fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Horario</p>
+                    </button>
+                    <!-- 3. Servicios -->
+                    <button type="button" @click="servicesModal = true" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.15s;" title="Ver Nuestros Servicios">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-utensils fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Servicios</p>
+                    </button>
+                    <!-- 4. TikTok -->
+                    <a href="https://www.tiktok.com/@sabora.fresco?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.2s;" title="Síguenos en TikTok">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-brands fa-tiktok fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">TikTok</p>
+                    </a>
+                    <!-- 5. Instagram -->
+                    <a href="https://www.instagram.com/saborcito.719?jplx=dDA5bXh4eWk5Y2Fn" target="_blank" rel="noopener noreferrer" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.25s;" title="Síguenos en Instagram">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-brands fa-instagram fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Instagram</p>
+                    </a>
+                    <!-- 6. WhatsApp -->
+                    <a href="https://wa.me/525666632409?text=Hola%20Sabora,%20me%20gustar%C3%ADa%20solicitar%20informaci%C3%B3n%20sobre%20sus%20productos%20saludables." target="_blank" rel="noopener noreferrer" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.3s;" title="Chatea por WhatsApp">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-brands fa-whatsapp fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">WhatsApp</p>
+                    </a>
+                    <!-- 7. Correo -->
+                    <a href="mailto:saborcito.719@gmail.com" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.35s;" title="Envíanos un Correo">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-envelope fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Correo</p>
+                    </a>
+                    <!-- 8. Ubicación -->
+                    <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="outline-none flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.4s;" title="Ver nuestra Ubicación">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-location-dot fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Ubicación</p>
+                    </a>
+                    <!-- 9. Promociones -->
+                    <button type="button" @click="promoModal = true" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.45s;" title="Ver Promociones">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-tags fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Promociones</p>
+                    </button>
+                    <!-- 10. Reservar (Reserva tu Servicio / Paquete) -->
+                    <button type="button" @click="calendarModal = true" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.5s;" title="Reserva tu Servicio / Paquete">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-calendar-check fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Reservar</p>
+                    </button>
+                    <!-- 11. Guardar (Guardar Contacto) -->
+                    <button type="button" onclick="downloadVCard()" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.55s;" title="Guardar Contacto">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-address-card fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">Guardar</p>
+                    </button>
+                    <!-- 12. QR -->
+                    <button type="button" @click="qrModal = true" class="outline-none bg-transparent border-0 p-0 cursor-pointer flex flex-col items-center text-center group icon-animate" style="animation-delay: 0.6s;" title="Código QR de Contacto">
+                        <div class="w-16 h-16 rounded-full bg-[#006A4E] text-[#FFFFF0] border-2 border-[#FFFFF0] ring-2 ring-[#006A4E] flex items-center justify-center icon-shadow circle-btn"><i class="fa-solid fa-qrcode fa-2x"></i></div>
+                        <p class="circle-label text-sm font-medium text-gray-700 mt-2">QR</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Enlace limpio sin botón ni caja para Descargar Tarjeta -->
+            <div class="px-6 pt-3 pb-4 text-center icon-animate" style="animation-delay: 0.65s;">
+                <span @click="installModal = true" role="button" tabindex="0" @keydown.enter="installModal = true" class="inline-flex items-center justify-center gap-2 text-[#006A4E] hover:text-[#004d39] font-semibold text-sm cursor-pointer transition-colors select-none" title="Ver cómo descargar la tarjeta en tu celular">
+                    <i class="fa-solid fa-download text-sm opacity-90"></i>
+                    <span>Descargar Tarjeta</span>
+                </span>
+            </div>
+
+            <!-- Pie de página sutil -->
+            <footer class="px-6 pb-6 pt-2 border-t border-[#006A4E]/15 text-center">
+                <p class="text-[11px] text-[#006A4E]/75 font-medium">&copy; 2026 Sabora &middot; Todos los derechos reservados</p>
+            </footer>
+
+            <!-- 6. MODALES ESTILIZADOS EN PALETA #006A4E Y #FFFFF0 -->
+
+            <!-- Modal de Servicios (X en esquina superior derecha, sin botón inferior Cerrar) -->
+            <div x-show="servicesModal" @keydown.escape.window="servicesModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="servicesModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-4 relative flex items-center justify-center">
+                        <h3 class="text-2xl font-bold">Nuestros Servicios</h3>
+                        <button type="button" @click="servicesModal = false" aria-label="Cerrar ventana" class="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full hover:bg-black/20 flex items-center justify-center text-[#FFFFF0] transition-colors">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+                        <div class="flex items-start gap-4 p-3 rounded-xl bg-white/75 border border-[#006A4E]/15">
+                            <img src="https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=600&auto=format&fit=crop" alt="Overnight Oats preparada en vaso con fruta" onerror="this.onerror=null;this.src='https://placehold.co/96x96/006A4E/FFFFF0?text=Overnight';" class="w-24 h-24 rounded-lg object-cover shadow-md flex-shrink-0">
+                            <div>
+                                <h4 class="font-bold text-lg text-[#006A4E]">Overnight</h4>
+                                <p class="text-gray-700 text-sm">Avena reposada en frío en vaso con superfoods, fruta fresca de temporada, semillas y toppings naturales listos para disfrutar.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-3 rounded-xl bg-white/75 border border-[#006A4E]/15">
+                            <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=600&auto=format&fit=crop" alt="Shots de Sabor" class="w-24 h-24 rounded-lg object-cover shadow-md flex-shrink-0">
+                            <div>
+                                <h4 class="font-bold text-lg text-[#006A4E]">Shots de Sabor</h4>
+                                <p class="text-gray-700 text-sm">Concentrados funcionales de jengibre, cúrcuma, cítricos y antioxidantes naturales diseñados para revitalizar tu día.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-3 rounded-xl bg-white/75 border border-[#006A4E]/15">
+                            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop" alt="Ensaladas" class="w-24 h-24 rounded-lg object-cover shadow-md flex-shrink-0">
+                            <div>
+                                <h4 class="font-bold text-lg text-[#006A4E]">Ensaladas</h4>
+                                <p class="text-gray-700 text-sm">Combinaciones balanceadas con vegetales frescos, proteínas seleccionadas, semillas y aderezos artesanales de la casa.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-3 rounded-xl bg-white/75 border border-[#006A4E]/15">
+                            <img src="https://images.unsplash.com/photo-1509722747041-616f39b57569?q=80&w=600&auto=format&fit=crop" alt="Chapatas" class="w-24 h-24 rounded-lg object-cover shadow-md flex-shrink-0">
+                            <div>
+                                <h4 class="font-bold text-lg text-[#006A4E]">Chapatas</h4>
+                                <p class="text-gray-700 text-sm">Pan artesanal crujiente relleno de ingredientes gourmet, quesos seleccionados, vegetales asados y aderezos especiales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Promociones (X en esquina superior derecha, sin botón inferior Cerrar) -->
+            <div x-show="promoModal" @keydown.escape.window="promoModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="promoModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-5 relative text-center">
+                        <button type="button" @click="promoModal = false" aria-label="Cerrar ventana" class="absolute right-4 top-4 w-9 h-9 rounded-full hover:bg-black/20 flex items-center justify-center text-[#FFFFF0] transition-colors">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        <h3 class="text-2xl font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-tags"></i> Promociones Sabora</h3>
+                        <p class="text-emerald-100 text-sm mt-1">Disfruta nuestros combos y beneficios especiales</p>
+                    </div>
+                    <div class="p-6 overflow-y-auto space-y-4 flex-grow">
+                        <div class="p-4 bg-white/85 rounded-xl border border-[#006A4E]/20 shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#006A4E] px-2.5 py-0.5 rounded-full">Combo Desayuno</span>
+                                <span class="text-[#006A4E] font-bold text-sm">15% OFF</span>
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-base">Overnight + Shot de Sabor</h4>
+                            <p class="text-gray-600 text-xs mt-1">Inicia tu mañana con energía combinando tu Overnight favorito y un Shot funcional natural.</p>
+                        </div>
+                        <div class="p-4 bg-white/85 rounded-xl border border-[#006A4E]/20 shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">Combo Comida</span>
+                                <span class="text-[#006A4E] font-bold text-sm">2x1 en Shots</span>
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-base">Chapata o Ensalada + Shots</h4>
+                            <p class="text-gray-600 text-xs mt-1">En la compra de cualquier Chapata artesanal o Ensalada completa llévate 2 Shots de Sabor al precio de 1.</p>
+                        </div>
+                        <div class="p-4 bg-white/85 rounded-xl border border-[#006A4E]/20 shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider bg-teal-100 text-teal-800 px-2.5 py-0.5 rounded-full">Semana Saludable</span>
+                                <span class="text-[#006A4E] font-bold text-sm">Envío Gratis</span>
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-base">Paquete 5 Días Sabora</h4>
+                            <p class="text-gray-600 text-xs mt-1">Arma tu plan semanal de 5 platillos (Overnight, Ensaladas o Chapatas) y recibe entrega sin costo.</p>
+                        </div>
+                        <div class="pt-2">
+                            <a href="https://wa.me/525666632409?text=Hola%20Sabora,%20me%20interesa%20aprovechar%20una%20de%20sus%20promociones." target="_blank" rel="noopener noreferrer" class="w-full bg-[#006A4E] text-[#FFFFF0] font-bold py-3 px-5 rounded-xl text-center hover:bg-[#00523c] transition-colors flex items-center justify-center gap-2 text-sm shadow-md">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Pedir Promoción por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Horario de Atención -->
+            <div x-show="scheduleModal" @keydown.escape.window="scheduleModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="scheduleModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-sm text-center border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-4">
+                        <h3 class="text-2xl font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-clock"></i> Horario de Atención</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3 text-gray-700">
+                            <div class="flex justify-between items-center border-b border-[#006A4E]/15 py-2"><span class="font-semibold">Martes a Viernes</span><span>10:00 AM - 8:00 PM</span></div>
+                            <div class="flex justify-between items-center border-b border-[#006A4E]/15 py-2"><span class="font-semibold">Sábados</span><span>10:00 AM - 6:00 PM</span></div>
+                            <div class="flex justify-between items-center py-2"><span class="font-semibold">Domingos y Lunes</span><span class="text-[#006A4E] font-medium">Solo Eventos Previos</span></div>
+                        </div>
+                        <div class="mt-6 flex justify-center">
+                            <button type="button" @click="scheduleModal = false" class="bg-[#006A4E] text-[#FFFFF0] font-bold py-2 px-6 rounded-lg w-full sm:w-auto hover:bg-[#00523c] transition-colors">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal del Código QR (vCard 3.0 completo) -->
+            <div x-show="qrModal" @keydown.escape.window="qrModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="qrModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl text-center border-2 border-[#006A4E] overflow-hidden max-w-sm w-full" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-4">
+                        <h3 class="text-xl font-bold">Escanea para Compartir</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 text-sm mb-4">
+                            Escanea este código QR con la cámara de tu teléfono para ver al instante los datos de <strong>Sabora</strong> y guardarlos directamente en tu agenda.
+                        </p>
+                        <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=BEGIN%3AVCARD%0AVERSION%3A3.0%0AN%3ASabora%3B%3B%3B%3B%0AFN%3ASabora%0AORG%3ASabora%0ATEL%3BTYPE%3DWORK%2CVOICE%3A%2B525666632409%0AEMAIL%3Asaborcito.719%40gmail.com%0ANOTE%3ALo%20rico%20tambi%C3%A9n%20puede%20hacerte%20bien%20-%20Overnight%2C%20Shots%20de%20Sabor%2C%20Ensaladas%2C%20Chapatas%0AEND%3AVCARD" alt="QR Code Contacto Sabora" class="mx-auto w-52 h-52 rounded-lg border border-[#006A4E]/20 p-2 bg-white shadow-sm">
+                        <div class="mt-6 flex justify-center">
+                            <button type="button" @click="qrModal = false" class="bg-[#006A4E] text-[#FFFFF0] font-bold py-2 px-6 rounded-lg hover:bg-[#00523c] transition-colors">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Descargar Tarjeta (Android / iPhone iOS) -->
+            <div x-show="installModal" @keydown.escape.window="installModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="installModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-5 text-center">
+                        <h3 class="text-xl sm:text-2xl font-bold flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button"></i> Descargar Tarjeta
+                        </h3>
+                        <p class="text-emerald-100 text-xs sm:text-sm mt-1">Guarda la tarjeta de <strong>Sabora</strong> en la pantalla de inicio de tu celular para abrirla como una app.</p>
+                    </div>
+
+                    <!-- Pestañas Android / iPhone -->
+                    <div class="px-6 pt-4">
+                        <div class="grid grid-cols-2 gap-2 bg-[#006A4E]/10 p-1 rounded-xl">
+                            <button type="button" @click="installTab = 'android'" :class="installTab === 'android' ? 'bg-[#FFFFF0] text-[#006A4E] shadow font-bold' : 'text-gray-700 font-medium hover:text-gray-900'" class="py-2.5 px-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-brands fa-android text-lg"></i> Android
+                            </button>
+                            <button type="button" @click="installTab = 'ios'" :class="installTab === 'ios' ? 'bg-[#FFFFF0] text-[#006A4E] shadow font-bold' : 'text-gray-700 font-medium hover:text-gray-900'" class="py-2.5 px-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-brands fa-apple text-lg"></i> iPhone (iOS)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenido explicativo por dispositivo -->
+                    <div class="p-6 overflow-y-auto flex-grow">
+                        <!-- Android -->
+                        <div x-show="installTab === 'android'" class="bg-white/85 p-5 rounded-xl border border-[#006A4E]/20 shadow-sm space-y-3">
+                            <h4 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                <i class="fa-brands fa-android text-[#006A4E] text-xl"></i> Pasos para Android
+                            </h4>
+                            <p class="text-xs text-gray-500">Sigue estas instrucciones desde el navegador <strong>Google Chrome</strong>:</p>
+                            <ol class="list-decimal list-inside text-gray-700 space-y-2.5 text-sm">
+                                <li>Abre esta tarjeta digital en tu navegador <strong>Chrome</strong>.</li>
+                                <li>Toca el ícono de los <strong>tres puntos (&#8942;)</strong> en la esquina superior derecha.</li>
+                                <li>Selecciona <strong>"Agregar a pantalla principal"</strong> o <strong>"Instalar aplicación"</strong>.</li>
+                                <li>Confirma el nombre <strong>Sabora</strong> y presiona <strong>"Agregar"</strong>.</li>
+                                <li>¡Listo! Tendrás el acceso directo de <strong>Sabora</strong> en tu pantalla de inicio.</li>
+                            </ol>
+                        </div>
+
+                        <!-- iPhone (iOS) -->
+                        <div x-show="installTab === 'ios'" class="bg-white/85 p-5 rounded-xl border border-[#006A4E]/20 shadow-sm space-y-3" style="display: none;">
+                            <h4 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                <i class="fa-brands fa-apple text-gray-800 text-xl"></i> Pasos para iPhone (iOS)
+                            </h4>
+                            <p class="text-xs text-gray-500">Sigue estas instrucciones desde el navegador <strong>Safari</strong>:</p>
+                            <ol class="list-decimal list-inside text-gray-700 space-y-2.5 text-sm">
+                                <li>Abre esta tarjeta digital en el navegador <strong>Safari</strong>.</li>
+                                <li>Toca el ícono de <strong>Compartir</strong> <i class="fa-solid fa-arrow-up-from-bracket text-[#006A4E]"></i> (un cuadro con una flecha hacia arriba).</li>
+                                <li>Desliza hacia abajo y selecciona <strong>"Agregar a la pantalla de inicio"</strong>.</li>
+                                <li>Verifica el nombre <strong>Sabora</strong> y toca <strong>"Agregar"</strong>.</li>
+                                <li>¡Listo! Podrás abrir la tarjeta con un solo toque desde tu pantalla.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="p-6 pt-0 flex justify-center">
+                        <button type="button" @click="installModal = false" class="bg-[#006A4E] text-[#FFFFF0] font-bold py-2.5 px-6 rounded-lg w-full sm:w-auto hover:bg-[#00523c] transition-colors">Entendido</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Calendario para Reserva de Servicio / Paquete -->
+            <div x-show="calendarModal" @keydown.escape.window="calendarModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" x-transition.opacity style="display: none;">
+                <div @click.away="calendarModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-md max-h-[95vh] flex flex-col border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-4 text-center">
+                        <h3 class="text-xl sm:text-2xl font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i> Selecciona el Día</h3>
+                        <p class="text-emerald-100 text-sm mt-1">Elige una fecha para reservar tu servicio o paquete</p>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <button type="button" @click="previousMonth()" class="p-2 rounded-full hover:bg-[#006A4E]/10"><i class="fa-solid fa-chevron-left"></i></button>
+                            <h4 class="font-semibold text-lg" x-text="`${monthNames[currentMonth]} ${currentYear}`"></h4>
+                            <button type="button" @click="nextMonth()" class="p-2 rounded-full hover:bg-[#006A4E]/10"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm text-gray-500 mb-2">
+                            <template x-for="day in dayNames" :key="day"><div x-text="day"></div></template>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1">
+                            <template x-for="day in calendarDays" :key="day.id">
+                                <div class="text-center text-sm py-1.5 sm:py-2">
+                                    <button type="button" x-show="day.date" @click="selectDate(day)" 
+                                            :class="{
+                                                'bg-[#006A4E] text-[#FFFFF0]': day.isSelected,
+                                                'text-gray-800 hover:bg-[#006A4E]/10': !day.isSelected && !day.isPast && !day.isSunday,
+                                                'text-gray-400 cursor-not-allowed': day.isPast || day.isSunday,
+                                                'ring-2 ring-[#006A4E]': day.isToday && !day.isSelected
+                                            }" 
+                                            class="w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-colors" 
+                                            :disabled="day.isPast || day.isSunday">
+                                        <span x-text="day.date"></span>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                            <button type="button" @click="calendarModal = false" class="w-full bg-stone-200 hover:bg-stone-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-colors">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Selección de Hora -->
+            <div x-show="timePickerModal" @keydown.escape.window="timePickerModal = false" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[51] p-4" x-transition.opacity style="display: none;">
+                <div @click.away="timePickerModal = false" class="bg-[#FFFFF0] rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] flex flex-col border-2 border-[#006A4E] overflow-hidden" x-transition.scale>
+                    <div class="bg-[#006A4E] text-[#FFFFF0] p-6 text-center">
+                        <h3 class="text-xl font-bold">Selecciona una Hora</h3>
+                        <p class="text-emerald-100 text-sm" x-text="`Para el ${selectedDate?.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}`"></p>
+                    </div>
+                    <div class="p-6 overflow-y-auto flex-grow">
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <template x-if="availableTimes.length > 0">
+                                <template x-for="time in availableTimes" :key="time">
+                                    <button type="button" @click="selectedTime = time" :class="selectedTime === time ? 'bg-[#006A4E] text-[#FFFFF0] shadow-lg' : 'bg-white/85 hover:bg-emerald-50 text-gray-700 border border-[#006A4E]/15'" class="py-3 px-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out transform hover:scale-105">
+                                        <span x-text="time"></span>
+                                    </button>
+                                </template>
+                            </template>
+                            <template x-if="availableTimes.length === 0 && selectedDate">
+                                <p class="col-span-full text-gray-500 text-sm py-4">No hay horas disponibles para este día.</p>
+                            </template>
+                        </div>
+                    </div>
+                     <div class="p-6 pt-0 flex flex-col sm:flex-row gap-2">
+                        <button type="button" @click="timePickerModal = false" class="w-full bg-stone-200 hover:bg-stone-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">Volver</button>
+                        <button type="button" @click="confirmAppointment()" :disabled="!selectedTime" :class="!selectedTime ? 'bg-emerald-300 cursor-not-allowed' : 'bg-[#006A4E] hover:bg-[#00523c]'" class="w-full text-[#FFFFF0] font-bold py-2 px-4 rounded-lg transition-colors">Confirmar Reserva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function appData() {
+            return {
+                qrModal: false,
+                servicesModal: false,
+                scheduleModal: false,
+                promoModal: false,
+                installModal: false,
+                installTab: 'android',
+                calendarModal: false,
+                timePickerModal: false,
+
+                // Propiedades del calendario
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear(),
+                selectedDate: null,
+                selectedTime: null,
+                calendarDays: [],
+                monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                dayNames: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+
+                init() {
+                    this.generateCalendarDays();
+                },
+
+                generateCalendarDays() {
+                    const firstDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
+                    const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let days = [];
+                    for (let i = 0; i < firstDay; i++) {
+                        days.push({ id: `empty-${i}` });
+                    }
+
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        const date = new Date(this.currentYear, this.currentMonth, i);
+                        const isPast = date < today;
+                        const isToday = date.getTime() === today.getTime();
+                        const isSunday = date.getDay() === 0;
+                        
+                        days.push({
+                            id: `day-${i}`,
+                            date: i,
+                            isToday,
+                            isPast,
+                            isSunday,
+                            isSelected: this.selectedDate && this.selectedDate.getTime() === date.getTime(),
+                        });
+                    }
+                    this.calendarDays = days;
+                },
+                
+                selectDate(day) {
+                    if (day.isPast || day.isSunday) return;
+                    this.selectedDate = new Date(this.currentYear, this.currentMonth, day.date);
+                    this.selectedTime = null;
+                    this.generateCalendarDays();
+                    this.timePickerModal = true;
+                },
+
+                previousMonth() {
+                    if (this.currentMonth === 0) {
+                        this.currentMonth = 11;
+                        this.currentYear--;
+                    } else {
+                        this.currentMonth--;
+                    }
+                    this.generateCalendarDays();
+                },
+
+                nextMonth() {
+                    if (this.currentMonth === 11) {
+                        this.currentMonth = 0;
+                        this.currentYear++;
+                    } else {
+                        this.currentMonth++;
+                    }
+                    this.generateCalendarDays();
+                },
+
+                confirmAppointment() {
+                    if (!this.selectedDate || !this.selectedTime) return;
+                    const formattedDate = this.selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    const message = encodeURIComponent(`Hola Sabora, me gustaría reservar un servicio o paquete para el ${formattedDate} a las ${this.selectedTime}.`);
+                    window.open(`https://wa.me/525666632409?text=${message}`, '_blank');
+                    
+                    this.timePickerModal = false;
+                    this.calendarModal = false;
+                    this.selectedDate = null;
+                    this.selectedTime = null;
+                    this.generateCalendarDays();
+                },
+                
+                get availableTimes() {
+                    if (!this.selectedDate) return [];
+                    
+                    const dayOfWeek = this.selectedDate.getDay();
+                    if (dayOfWeek === 0) return [];
+
+                    let times = [];
+                    const startTime = 10;
+                    const endTime = (dayOfWeek === 6) ? 18 : 20;
+
+                    for (let hour = startTime; hour < endTime; hour++) {
+                        times.push(`${hour}:00`);
+                        times.push(`${hour}:30`);
+                    }
+                    return times;
+                }
+            }
+        }
+
+        function getSaboraVCard() {
+            return [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'N:Sabora;;;;',
+                'FN:Sabora',
+                'ORG:Sabora',
+                'TEL;TYPE=WORK,VOICE:+525666632409',
+                'EMAIL:saborcito.719@gmail.com',
+                'NOTE:Lo rico también puede hacerte bien - Overnight · Shots de Sabor · Ensaladas · Chapatas',
+                'END:VCARD'
+            ].join('\n');
+        }
+
+        function downloadVCard() {
+            const vCard = getSaboraVCard();
+            const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'Sabora.vcf');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrImg = document.getElementById('qrCodeImg');
+            if (qrImg) {
+                const vCardText = getSaboraVCard();
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${encodeURIComponent(vCardText)}`;
+            }
+        });
+    </script>
+</body>
+</html>
